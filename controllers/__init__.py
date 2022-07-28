@@ -1,6 +1,8 @@
 import importlib
 import os
 
+from werkzeug.exceptions import NotFound
+
 from utils import RequestParams
 
 
@@ -26,12 +28,21 @@ class Controller:
             if self.modules.get(c_path).__dict__.__contains__(str(request.method).lower()):
                 return self.modules.get(c_path).__getattribute__(str(request.method).lower())(params)
             else:
-                return response("Not Implemented!", status=405)
+                raise NotFound(
+                    description="Method Not Implemented!",
+                    response=response("Method Not Implemented!", status=405)
+                )
 
         elif str(c_path).strip() == "":
             try:
                 return self.modules.get(home_page).__getattribute__(str(request.method).lower())(params)
             except AttributeError:
-                return response("Home Page Not Implemented!", status=405)
+                raise NotFound(
+                    description="Home Page Method Not Implemented!",
+                    response=response("Home Page Method Not Implemented!", status=405)
+                )
 
-        return response("Not Found!", status=404)
+        raise NotFound(
+            description="Route Not Found!",
+            response=response("Route Not Found!", status=404)
+        )
