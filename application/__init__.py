@@ -1,3 +1,4 @@
+import click
 from flask import Flask, Response, request, render_template
 from controllers import Controller
 
@@ -16,3 +17,27 @@ def routing(__path):
         response=Response,
         render_template=render_template
     )
+
+
+@app.cli.command("my-cmd")
+@click.option('--param', default="")
+def mycmd(param):
+    print(param)
+
+
+@app.cli.command("my-pos")
+@click.option('--pos', nargs=2, type=float)
+def findme(pos):
+    click.echo('%s / %s' % pos)
+
+
+@app.cli.command("my-msg")
+@click.option('--message', '-m', multiple=True)
+def commit(message):
+    click.echo('\n'.join(message))
+
+
+@app.cli.command("my-verb")
+@click.option('-v', '--verbose', count=True)
+def log(verbose):
+    click.echo('Verbosity: %s' % verbose)
